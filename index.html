@@ -206,7 +206,7 @@ function score(p){const t=p.t,a=t.amenity==='karaoke'||t.leisure==='karaoke'?'ka
   const P={meal:{restaurant:3,food_court:1.5,fast_food:1},chat:{cafe:3.5,restaurant:1.2},drink:{bar:3.5,pub:3.5,restaurant:.6},date:{restaurant:2.5,cafe:2.2,bar:1.6},bday:{restaurant:3,karaoke_box:2.5},after:{bar:3,pub:3,karaoke_box:3,cafe:.8}}[st.pur];
   s+=P[a]||-3;if((P[a]||0)<=0)return null;
   if(st.pur==='date'&&/italian|french|japanese|steak|sushi|izakaya/.test(c)){s+=1.5;why.push('適合約會')}
-  if(st.pur==='bday'&&(/hot_pot|barbecue|buffet/.test(c)||b.bday)){s+=2;why.push(b.bday?'會幫壽星慶生':'大家一起吃最熱鬧')}
+  if(st.pur==='bday'&&(/hot_pot|barbecue|buffet/.test(c)||b.bday)){s+=2;why.push(a==='karaoke_box'?'唱歌慶生最熱鬧':b.bday?'適合慶生':'大家一起吃最熱鬧')}
   if(st.pur==='drink'&&/izakaya/.test(c)){s+=1.5;why.push('居酒屋')}
   // group size
   if(st.ppl>=5){if(b.big||/hot_pot|barbecue|chinese|buffet|izakaya/.test(c)||a==='karaoke_box'||a==='food_court'){s+=2;why.push('多人好坐')}else if(b.small||a==='cafe')s-=1.2}
@@ -231,7 +231,9 @@ function score(p){const t=p.t,a=t.amenity==='karaoke'||t.leisure==='karaoke'?'ka
   return{p,s,why:[...new Set(why)].slice(0,4),warn:warn.slice(0,2),kind,hours:t.opening_hours||''}}
 
 let ranked=[],page=0;
-function pick3(){const out=[],brands=new Set();for(const r of ranked.slice(page*3)){const key=r.p.name.replace(/\s.*$/,'').slice(0,4);if(brands.has(key))continue;brands.add(key);out.push(r);if(out.length===3)break}return out}
+function pick3(){const pool=ranked.slice(page*3),out=[],brands=new Set(),kinds={};const bk=r=>r.p.name.replace(/\s.*$/,'').slice(0,4);
+  for(const pass of [1,2,9])for(const r of pool){if(out.length===3)break;if(out.includes(r)||brands.has(bk(r)))continue;if((kinds[r.kind]||0)>=pass)continue;if(pass<9&&pool[0]&&r.s<pool[0].s-4)continue;out.push(r);brands.add(bk(r));kinds[r.kind]=(kinds[r.kind]||0)+1}
+  return out.sort((a,b)=>b.s-a.s)}
 const COLORS=['var(--red)','var(--blue)','var(--green)'];
 const gm=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.lat.toFixed(5)+','+p.lng.toFixed(5));
 const gs=p=>'https://www.google.com/search?q='+encodeURIComponent(p.name+' 評價 限時 訂位');
