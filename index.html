@@ -226,8 +226,8 @@ function score(p){const t=p.t,a=t.amenity==='karaoke'||t.leisure==='karaoke'?'ka
   if(N.has('veg')){if(/yes|only/.test((t['diet:vegetarian']||'')+(t['diet:vegan']||''))||b.veg||/vegetarian|vegan/.test(c)){s+=3;why.push('有素食')}else s-=.8}
   if(t.outdoor_seating==='yes'&&st.pur!=='bday')why.push('有戶外座位');
   if(b.note){const kw=['不限時','慶生','可訂位','安靜'];for(const k of kw)if(b.note.includes(k))for(let i=why.length-1;i>=0;i--)if(why[i].includes(k))why.splice(i,1);why.unshift(b.note)}
-  s-=p.km*1.6;
-  const kind=(c.split(/[;,]/).map(x=>CUILAB[x.trim()]).find(Boolean)||'')+(LABEL[a]||'');
+  s-=p.km*3;
+  let cl=(c.split(/[;,]/).map(x=>CUILAB[x.trim()]).find(Boolean)||'');if(a==='cafe'&&cl==='咖啡')cl='';const kind=cl+(LABEL[a]||'');
   return{p,s,why:[...new Set(why)].slice(0,4),warn:warn.slice(0,2),kind,hours:t.opening_hours||''}}
 
 let ranked=[],page=0;
@@ -239,7 +239,7 @@ function render(){const three=pick3();
   if(!three.length){$('tix').innerHTML='<div class="box" style="text-align:center">附近找不到符合的店。少勾一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('res').hidden=false;return}
   $('resTitle').textContent=`就這 3 間（${st.label||st.place}附近）`;
   $('tix').innerHTML=three.map((r,i)=>{const p=r.p;return`<article class="tk pop" style="--c:${COLORS[i]};animation-delay:${i*80}ms"><span class="no">${'ABC'[i]}</span><h3>${esc(p.name)}</h3>
-    <div class="meta"><span>${esc(r.kind||'餐飲')}</span><span>走路 ${walk(p.km)} 分</span>${r.hours?`<span>${esc(r.hours.slice(0,34))}</span>`:''}</div>
+    <div class="meta"><span>${esc(r.kind||'餐飲')}</span><span>走路 ${walk(p.km)} 分</span>${r.hours?`<span>${esc(r.hours.length>44?r.hours.slice(0,44)+'…':r.hours)}</span>`:''}</div>
     <div class="why">${r.why.map(w=>`<span>✓ ${esc(w)}</span>`).join('')}${r.warn.map(w=>`<span class="warn">${esc(w)}</span>`).join('')}</div>
     <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">看地圖和評論</a><a href="${gs(p)}" target="_blank" rel="noopener">查限時、訂位</a></div></article>`}).join('');
   const pur=(PUR.find(x=>x[0]===st.pur)||[])[1];
