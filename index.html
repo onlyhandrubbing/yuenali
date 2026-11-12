@@ -70,6 +70,11 @@ header p{margin:0;color:var(--muted);font-size:15px}
 .tk .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
 .tk a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--soft)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
+.tk a.aff{background:var(--orange);color:#1b2430;border-color:var(--line)}
+.prep{margin-top:14px;background:var(--card);border:2.5px solid var(--line);border-radius:18px;padding:12px 14px;display:grid;gap:8px}
+.prep b{font-family:var(--f-hand);font-weight:400;font-size:19px}
+.prep .links{display:flex;flex-wrap:wrap;gap:8px}
+.prep a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--soft)}
 .vote{background:var(--card);border:2.5px dashed var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
 .vote pre{margin:0;white-space:pre-wrap;font-family:var(--f-body);font-size:14px;background:var(--soft);border-radius:12px;padding:10px 12px;max-height:220px;overflow:auto}
 .fine{font-size:12px;color:var(--muted);text-align:center;margin:0}
@@ -106,6 +111,7 @@ header p{margin:0;color:var(--muted);font-size:15px}
     <div class="sec" id="resTitle">就這 3 間</div>
     <div class="tix" id="tix" style="margin-top:12px"></div>
     <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="again" type="button">再換 3 間</button></div>
+    <div class="prep" id="prepBox" hidden><b>出門前順便準備</b><div class="links" id="prep"></div></div>
     <div class="vote" style="margin-top:14px">
       <b style="font-family:var(--f-hand);font-weight:400;font-size:20px">丟到群組投票</b>
       <pre id="voteTxt"></pre>
@@ -113,7 +119,7 @@ header p{margin:0;color:var(--muted);font-size:15px}
     </div>
   </div>
 
-  <p class="fine">店家資料來自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>。「安靜」「不限時」等是依店家類型和連鎖品牌常見規定推估，各分店不同，出發前請用 Google 地圖看評論或打電話確認。</p>
+  <p class="fine">店家資料來自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>。「安靜」「不限時」等是依店家類型和連鎖品牌常見規定推估，各分店不同，出發前請用 Google 地圖看評論或打電話確認。「餐券」「順便準備」為蝦皮推薦連結，透過連結購買站長可能獲得分潤，你的價格不受影響。</p>
 </div>
 <div class="toast" id="toast" hidden></div>
 
@@ -134,6 +140,11 @@ let st=Object.assign({pur:'chat',ppl:4,bud:2,need:['quiet','nolimit'],place:'',l
 const save=()=>LS.set('yn_st',st);
 
 /* chain knowledge: name pattern → traits (typical, varies by branch) */
+const AFF={id:'16301320039',sub:'yuenali'};
+const buyUrl=kw=>'https://s.shopee.tw/an_redir?origin_link='+encodeURIComponent('https://shopee.tw/search?keyword='+encodeURIComponent(kw))+'&affiliate_id='+AFF.id+'&sub_id='+AFF.sub;
+const VOUCH=[[/星巴克|starbucks/i,'星巴克 電子券'],[/路易莎|louisa/i,'路易莎 咖啡券'],[/王品|陶板屋|西堤|夏慕尼|藝奇|原燒|品田牧場|石二鍋|青花驕|肉次方/i,'王品 餐券'],[/海底撈/i,'海底撈 券'],[/瓦城|大心|1010湘|非常泰/i,'瓦城 餐券'],[/錢櫃|partyworld|cashbox/i,'錢櫃 歡唱券'],[/好樂迪|holiday/i,'好樂迪 歡唱券'],[/星聚點/i,'星聚點 歡唱券'],[/鼎王/i,'鼎王 餐券'],[/築間/i,'築間 餐券'],[/乾杯/i,'乾杯 燒肉 餐券'],[/饗|響食天堂|饗泰多|旭集/i,'饗賓 餐券'],[/麥當勞|mcdonald/i,'麥當勞 電子券'],[/摩斯|mos/i,'摩斯 電子券'],[/85度c/i,'85度C 電子券'],[/鬍鬚張/i,'鬍鬚張 餐券'],[/漢來/i,'漢來 餐券']];
+const voucherOf=n=>{for(const[re,k]of VOUCH)if(re.test(n))return k;return''};
+const PREP={meal:[['🎟️ 連鎖餐廳電子餐券','餐廳 電子餐券']],chat:[['☕ 帶回家的濾掛咖啡','濾掛咖啡 禮盒']],drink:[['🥃 在家續攤的調酒杯組','調酒 杯組']],date:[['💐 約會小花束','花束 小束'],['🕯️ 香氛蠟燭','香氛蠟燭 禮盒']],bday:[['🎈 生日派對佈置','生日 派對 佈置'],['🎂 數字蠟燭','數字蠟燭'],['🎉 派對拉炮','派對 拉炮']],after:[['🎲 續攤派對桌遊','桌遊 派對'],['🎤 KTV 歡唱券','KTV 歡唱券']]};
 const BRANDS=[
  [/星巴克|starbucks/i,{nolimit:1,plug:1,big:1,chat:1,price:2,note:'多數分店不限時、插座多'}],
  [/路易莎|louisa/i,{nolimit:1,plug:1,big:1,chat:1,price:1,note:'座位多、多半不限時'}],
@@ -243,7 +254,8 @@ function render(){const three=pick3();
   $('tix').innerHTML=three.map((r,i)=>{const p=r.p;return`<article class="tk pop" style="--c:${COLORS[i]};animation-delay:${i*80}ms"><span class="no">${'ABC'[i]}</span><h3>${esc(p.name)}</h3>
     <div class="meta"><span>${esc(r.kind||'餐飲')}</span><span>走路 ${walk(p.km)} 分</span>${r.hours?`<span>${esc(r.hours.length>44?r.hours.slice(0,44)+'…':r.hours)}</span>`:''}</div>
     <div class="why">${r.why.map(w=>`<span>✓ ${esc(w)}</span>`).join('')}${r.warn.map(w=>`<span class="warn">${esc(w)}</span>`).join('')}</div>
-    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">看地圖和評論</a><a href="${gs(p)}" target="_blank" rel="noopener">查限時、訂位</a></div></article>`}).join('');
+    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">看地圖和評論</a><a href="${gs(p)}" target="_blank" rel="noopener">查限時、訂位</a>${voucherOf(p.name)?`<a class="aff" href="${buyUrl(voucherOf(p.name))}" target="_blank" rel="noopener sponsored">🎟️ 蝦皮找餐券</a>`:''}</div></article>`}).join('');
+  const prep=PREP[st.pur]||[];$('prep').innerHTML=prep.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">🎁 還沒想好送什麼？禮物不踩雷</a>':'');$('prepBox').hidden=!prep.length;
   const pur=(PUR.find(x=>x[0]===st.pur)||[])[1];
   $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${pur}・${(PPL.find(x=>x[0]===st.ppl)||[])[1]}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」3 秒選的：${SITE}）`;
   $('res').hidden=false}
