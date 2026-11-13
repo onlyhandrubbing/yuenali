@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>約哪裡｜聚會、約會、聊天去哪裡 3 秒給你 3 間</title>
-<meta name="description" content="選地點、人數、想做什麼和條件（安靜、不限時、可訂位、包廂、深夜），直接給你附近 3 間合適的店，一鍵丟到群組投票，不用再問「今天吃什麼」。">
+<meta name="description" content="一句話說出你的情況：在哪、幾個人、想做什麼、要安靜還是不限時，直接給你附近 3 間，去過的人還會留下真實回饋。一鍵丟到群組投票。">
 <meta property="og:title" content="約哪裡｜3 秒選好聚會地點">
-<meta property="og:description" content="安靜能聊、不限時、捷運站附近……條件點一點，直接給你 3 間，丟群組投票。">
+<meta property="og:description" content="安靜能聊、不限時、捷運站附近……一句話給你 3 間，還有去過的人的真實回饋。">
 <meta property="og:image" content="https://onlyhandrubbing.github.io/yuenali/og.png">
 <meta property="og:url" content="https://onlyhandrubbing.github.io/yuenali/">
 <meta property="og:type" content="website">
@@ -16,111 +16,108 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
-/* Layout: one phone-width column like a transit board; the answer is three "tickets" in MRT line colours, ready to send to a group vote. */
+/* Layout: one narrow column. The question is a single sentence with tappable blanks; the answer is three line-coloured cards; each card collects what visitors say about the place. */
 :root{
-  --bg:#e8eef3; --card:#ffffff; --ink:#1b2430; --muted:#5d6b7a; --line:#1b2430;
-  --red:#e3002c; --blue:#0070bd; --green:#008659; --orange:#f8b61c; --brown:#c48c31;
-  --pick:#1b2430; --pick-ink:#ffffff; --soft:#f2f5f8;
+  --bg:#eef1f4; --grid:#e3e8ed; --card:#ffffff; --ink:#18212b; --muted:#5f6c79; --rule:#d5dce3;
+  --a:#e3002c; --b:#0070bd; --c:#008659; --hi:#f8b61c; --hi-ink:#2a1d00;
   --f-hand:"Huninn","Noto Sans TC",system-ui,sans-serif;
   --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#121820; --card:#1b232e; --ink:#eaf1f7; --muted:#9aa9b8; --line:#05080b; --pick:#eaf1f7; --pick-ink:#121820; --soft:#222c38;
-  --red:#ff4d5e; --blue:#4aa8ff; --green:#3cc58f; --orange:#ffc94a; --brown:#e0a85a; color-scheme:dark}}
+  --bg:#11161c; --grid:#161d25; --card:#1a222b; --ink:#e9eff5; --muted:#9aa8b6; --rule:#2a3541;
+  --a:#ff5263; --b:#4aa8ff; --c:#3cc58f; --hi:#ffc94a; --hi-ink:#231800; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#121820; --card:#1b232e; --ink:#eaf1f7; --muted:#9aa9b8; --line:#05080b; --pick:#eaf1f7; --pick-ink:#121820; --soft:#222c38;
-  --red:#ff4d5e; --blue:#4aa8ff; --green:#3cc58f; --orange:#ffc94a; --brown:#e0a85a; color-scheme:dark}
+  --bg:#11161c; --grid:#161d25; --card:#1a222b; --ink:#e9eff5; --muted:#9aa8b6; --rule:#2a3541;
+  --a:#ff5263; --b:#4aa8ff; --c:#3cc58f; --hi:#ffc94a; --hi-ink:#231800; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
-.app{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 60px;display:grid;gap:14px}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.lines{display:flex;height:8px;border-radius:6px;overflow:hidden}
-.lines i{flex:1}
-header h1{font-family:var(--f-hand);font-weight:400;font-size:clamp(32px,9vw,44px);line-height:1.1;margin:10px 0 6px;text-wrap:balance}
-header h1 span{background:linear-gradient(transparent 62%,var(--orange) 62%)}
-header p{margin:0;color:var(--muted);font-size:15px}
-.box{background:var(--card);border:2.5px solid var(--line);border-radius:20px;padding:14px;display:grid;gap:12px;box-shadow:0 3px 0 var(--line)}
-.q b{display:block;font-family:var(--f-hand);font-weight:400;font-size:19px;margin-bottom:6px}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:15px}
-.chip[aria-pressed="true"]{background:var(--pick);color:var(--pick-ink);font-weight:700}
-.where{display:grid;grid-template-columns:1fr auto;gap:8px}
-.where input{min-width:0;padding:9px 12px;border:2px solid var(--line);border-radius:12px;background:var(--soft)}
-.btn{border:2.5px solid var(--line);background:var(--card);border-radius:14px;padding:9px 14px;cursor:pointer;font-family:var(--f-hand);font-size:17px;box-shadow:0 3px 0 var(--line)}
-.btn:active{transform:translateY(3px);box-shadow:none}
-.btn.go{background:var(--red);color:#fff;font-size:21px;padding:12px 16px;width:100%}
-.btn.sm{font-size:15px;padding:6px 12px}
-.here{font-size:14px;color:var(--muted)}
-.here b{color:var(--ink)}
-.status{text-align:center;color:var(--muted);font-size:14px;min-height:1.4em}
-.sec{font-family:var(--f-hand);font-size:24px;margin:4px 2px -4px}
-.tix{display:grid;gap:12px}
-.tk{position:relative;background:var(--card);border:2.5px solid var(--line);border-radius:18px;padding:14px 14px 14px 22px;display:grid;gap:6px;box-shadow:0 3px 0 var(--line);overflow:hidden}
-.tk::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--c)}
-.tk .no{position:absolute;right:12px;top:10px;width:34px;height:34px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--f-hand);font-size:18px}
-.tk h3{margin:0;font-size:20px;font-weight:900;line-height:1.25;padding-right:44px}
-.tk .meta{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;color:var(--muted)}
-.tk .meta span{background:var(--soft);border-radius:8px;padding:1px 8px}
-.why{display:flex;flex-wrap:wrap;gap:6px}
-.why span{font-size:13px;font-weight:700;border:1.5px solid var(--c);color:var(--ink);border-radius:999px;padding:1px 9px}
-.why span.warn{border-style:dashed;color:var(--muted);font-weight:500}
-.tk .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
-.tk a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--soft)}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.tk a.aff{background:var(--orange);color:#1b2430;border-color:var(--line)}
-.prep{margin-top:14px;background:var(--card);border:2.5px solid var(--line);border-radius:18px;padding:12px 14px;display:grid;gap:8px}
-.prep b{font-family:var(--f-hand);font-weight:400;font-size:19px}
-.prep .links{display:flex;flex-wrap:wrap;gap:8px}
-.prep a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--soft)}
-.vote{background:var(--card);border:2.5px dashed var(--line);border-radius:18px;padding:14px;display:grid;gap:10px}
-.vote pre{margin:0;white-space:pre-wrap;font-family:var(--f-body);font-size:14px;background:var(--soft);border-radius:12px;padding:10px 12px;max-height:220px;overflow:auto}
-.fine{font-size:12px;color:var(--muted);text-align:center;margin:0}
+body{margin:0;color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;background:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+.app{max-width:500px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:22px 64px}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-hand);font-size:20px}
+.brand i{display:inline-flex;gap:3px}.brand i b{width:6px;height:22px;border-radius:3px;display:block}
+/* sentence */
+.ask{margin:28px 0 0;font-family:var(--f-hand);font-weight:400;font-size:clamp(25px,7vw,31px);line-height:1.85;letter-spacing:.01em;text-wrap:pretty}
+.slot{border:0;background:none;padding:0 2px;cursor:pointer;color:var(--ink);font-family:inherit;font-size:inherit;border-bottom:3px solid var(--hi);line-height:1.2;border-radius:0}
+.slot:hover{background:color-mix(in srgb,var(--hi) 25%,transparent)}
+.slot.empty{color:var(--muted);border-bottom-style:dashed}
+.hint{color:var(--muted);font-size:14px;margin:10px 0 0}
+.go{margin-top:22px;width:100%;border:0;border-radius:16px;background:var(--ink);color:var(--bg);font-family:var(--f-hand);font-size:22px;padding:14px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:10px}
+.go:disabled{opacity:.6;cursor:default}
+.status{min-height:1.5em;text-align:center;color:var(--muted);font-size:14px;margin-top:10px}
+/* results */
+.res{margin-top:30px;display:grid;gap:14px}
+.res-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.res-h h2{margin:0;font-family:var(--f-hand);font-weight:400;font-size:24px}
+.res-h small{color:var(--muted);font-size:13px}
+.card{background:var(--card);border-radius:18px;padding:16px 16px 12px 20px;position:relative;box-shadow:0 1px 0 var(--rule),0 12px 28px -22px rgba(0,0,0,.6);display:grid;gap:8px;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--lc)}
+.card .top{display:flex;gap:12px;align-items:flex-start}
+.badge{flex:none;width:30px;height:30px;border-radius:50%;background:var(--lc);color:#fff;display:grid;place-items:center;font-family:var(--f-hand);font-size:16px;margin-top:2px}
+.card h3{margin:0;font-size:19px;font-weight:900;line-height:1.3}
+.meta{font-size:13.5px;color:var(--muted)}
+.reasons{font-size:14px;line-height:1.7}
+.reasons span{white-space:nowrap;margin-right:10px}
+.reasons .no{color:var(--muted)}
+.crowd{font-size:13.5px;background:color-mix(in srgb,var(--lc) 9%,transparent);border-radius:10px;padding:7px 10px}
+.crowd q{quotes:"「" "」";color:var(--ink)}
+.crowd .none{color:var(--muted)}
+.acts{display:flex;gap:4px;border-top:1px solid var(--rule);margin-top:4px;padding-top:6px;flex-wrap:wrap}
+.acts a,.acts button{border:0;background:none;padding:6px 8px;border-radius:8px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer}
+.acts a:hover,.acts button:hover{background:var(--bg)}
+.acts .fb{margin-left:auto;color:var(--lc)}
+.more{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}
+.btn{border:1.5px solid var(--ink);background:var(--card);border-radius:14px;padding:11px 10px;cursor:pointer;font-family:var(--f-hand);font-size:17px}
+.btn.dark{background:var(--ink);color:var(--bg)}
+details.vote{font-size:14px;color:var(--muted)}
+details.vote summary{cursor:pointer}
+details.vote pre{white-space:pre-wrap;font-family:var(--f-body);background:var(--card);border-radius:12px;padding:10px 12px;color:var(--ink);max-height:200px;overflow:auto}
+.prep{font-size:14px;color:var(--muted);line-height:2}
+.prep a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--hi);margin-right:12px;white-space:nowrap}
+.fine{margin-top:36px;font-size:12px;color:var(--muted);line-height:1.7}
 .fine a{color:var(--muted)}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-weight:700;z-index:40;max-width:calc(100% - 32px);text-align:center}
-.pop{animation:pop .35s ease-out both}
-@keyframes pop{0%{transform:translateY(10px);opacity:0}100%{transform:none;opacity:1}}
+/* sheets */
+.veil{position:fixed;inset:0;background:rgba(10,14,18,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:500px;background:var(--card);border-radius:22px 22px 0 0;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));display:grid;gap:14px;max-height:85vh;overflow:auto;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h4{margin:0;font-family:var(--f-hand);font-weight:400;font-size:22px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--rule);background:var(--card);border-radius:12px;padding:8px 13px;cursor:pointer;font-size:15px}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg);font-weight:700}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0;border:1.5px solid var(--rule);border-radius:12px;padding:10px 12px;background:var(--bg)}
+textarea{width:100%;border:1.5px solid var(--rule);border-radius:12px;padding:10px 12px;background:var(--bg);resize:vertical;min-height:70px}
+.sub{font-size:13px;color:var(--muted);margin:-6px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;z-index:60;max-width:calc(100% - 36px);text-align:center}
+.card{animation:in .35s ease-out both}
+@keyframes in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="lines" aria-hidden="true"><i style="background:var(--red)"></i><i style="background:var(--blue)"></i><i style="background:var(--green)"></i><i style="background:var(--orange)"></i><i style="background:var(--brown)"></i></div>
-    <h1>今天<span>約哪裡</span>？</h1>
-    <p>條件點一點，直接給你附近 3 間，丟到群組投票就好，不用再吵 30 分鐘。</p>
-  </header>
+  <div class="brand"><i aria-hidden="true"><b style="background:var(--a)"></b><b style="background:var(--b)"></b><b style="background:var(--c)"></b><b style="background:var(--hi)"></b></i>約哪裡</div>
 
-  <section class="box" aria-label="條件">
-    <div class="q"><b>在哪附近？</b>
-      <div class="where"><input id="place" type="text" placeholder="捷運站、地址或地標" aria-label="地點"><button class="btn sm" id="gps" type="button">📍 我在這</button></div>
-      <div class="chips" id="c-st" style="margin-top:8px"></div>
-      <div class="here" id="here" style="margin-top:6px"></div>
-    </div>
-    <div class="q"><b>要做什麼？</b><div class="chips" id="c-pur"></div></div>
-    <div class="q"><b>幾個人？</b><div class="chips" id="c-ppl"></div></div>
-    <div class="q"><b>一個人大概花多少？</b><div class="chips" id="c-bud"></div></div>
-    <div class="q"><b>一定要有（可複選）</b><div class="chips" id="c-need"></div></div>
-    <button class="btn go" id="go" type="button">給我 3 間 →</button>
-    <div class="status" id="status" aria-live="polite"></div>
+  <p class="ask" id="ask"></p>
+  <p class="hint">點畫底線的地方就能改。</p>
+  <button class="go" id="go" type="button">幫我挑 3 間 <span aria-hidden="true">→</span></button>
+  <div class="status" id="status" aria-live="polite"></div>
+
+  <section class="res" id="res" hidden>
+    <div class="res-h"><h2>就這 3 間</h2><small id="resNote"></small></div>
+    <div id="cards" style="display:grid;gap:14px"></div>
+    <div class="more"><button class="btn" id="again" type="button">再換 3 間</button><button class="btn dark" id="copyVote" type="button">傳到群組投票</button></div>
+    <details class="vote"><summary>看要傳出去的內容</summary><pre id="voteTxt"></pre></details>
+    <div class="prep" id="prep"></div>
   </section>
 
-  <div id="res" hidden>
-    <div class="sec" id="resTitle">就這 3 間</div>
-    <div class="tix" id="tix" style="margin-top:12px"></div>
-    <div class="row" style="justify-content:center;margin-top:12px"><button class="btn" id="again" type="button">再換 3 間</button></div>
-    <div class="prep" id="prepBox" hidden><b>出門前順便準備</b><div class="links" id="prep"></div></div>
-    <div class="vote" style="margin-top:14px">
-      <b style="font-family:var(--f-hand);font-weight:400;font-size:20px">丟到群組投票</b>
-      <pre id="voteTxt"></pre>
-      <div class="row"><button class="btn" id="copyVote" type="button">複製，貼到 LINE</button></div>
-    </div>
-  </div>
-
-  <p class="fine">店家資料來自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>。「安靜」「不限時」等是依店家類型和連鎖品牌常見規定推估，各分店不同，出發前請用 Google 地圖看評論或打電話確認。「餐券」「順便準備」為蝦皮推薦連結，透過連結購買站長可能獲得分潤，你的價格不受影響。</p>
+  <p class="fine">店家資料來自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>。「安靜」「不限時」等是依店家類型和連鎖品牌常見規定推估，再加上去過的人的回饋；各分店不同，出發前請用 Google 地圖確認。回饋為使用者自行留下，不代表本站立場。「餐券」與「出門前」的連結為蝦皮推薦連結，透過連結購買站長可能獲得分潤，你的價格不受影響。</p>
 </div>
+
+<div class="veil" id="veil" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -129,6 +126,8 @@ const SITE='https://onlyhandrubbing.github.io/yuenali/';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* feedback backend: a Google Form collects, its linked sheet (published as CSV) is read back */
+const FEED={form:'',entry:'',csv:''};
 const OVERPASS=['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
 
 const STATIONS=['台北車站','西門','中山','忠孝復興','忠孝敦化','市政府','信義安和','公館','東門','南京復興','板橋','板橋車站','台中車站','高雄美麗島'];
@@ -167,18 +166,6 @@ const BRANDS=[
  [/素|蔬食|vegan|vegetarian/i,{veg:1}]
 ];
 const brandOf=n=>{for(const[re,t]of BRANDS)if(re.test(n))return t;return{}};
-
-/* chips */
-function chips(id,list,key,multi){$(id).innerHTML=list.map(([v,l])=>`<button class="chip" type="button" data-v="${v}" aria-pressed="${multi?st[key].includes(v):String(st[key])===String(v)}">${l}</button>`).join('');
-  $(id).onclick=e=>{const b=e.target.closest('.chip');if(!b)return;let v=b.dataset.v;if(key==='ppl'||key==='bud')v=+v;
-    if(multi){st[key]=st[key].includes(v)?st[key].filter(x=>x!==v):st[key].concat(v)}else st[key]=v;save();chips(id,list,key,multi)}}
-chips('c-pur',PUR,'pur');chips('c-ppl',PPL,'ppl');chips('c-bud',BUD,'bud');chips('c-need',NEED,'need',true);
-$('c-st').innerHTML=STATIONS.map(s=>`<button class="chip" type="button" data-s="${s}">${s}</button>`).join('');
-$('c-st').onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;$('place').value=b.dataset.s;st.lat=null;go()};
-$('place').value=st.place||'';
-const showHere=()=>{$('here').innerHTML=st.lat?`📍 以 <b>${esc(st.label||'你的位置')}</b> 為中心找`:''};showHere();
-
-/* geo */
 function km(a,b,c,d){const R=6371,r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
 const walk=k=>Math.max(1,Math.round(k*1.25/4.8*60));
 const msg=t=>$('status').textContent=t||'';
@@ -186,10 +173,6 @@ async function geocode(q){
   const qq=/^(台北車站|板橋車站|台中車站)$/.test(q)?q:(/站$|車站/.test(q)||STATIONS.includes(q)?'捷運'+q.replace(/站$/,'')+'站':q);
   for(const s of [qq,q]){const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=zh-TW&countrycodes=tw&q='+encodeURIComponent(s));const j=await r.json();if(j.length)return{lat:+j[0].lat,lng:+j[0].lon,label:q}}
   return null}
-$('gps').onclick=()=>{if(!navigator.geolocation){msg('這個瀏覽器不能定位，請輸入地點。');return}msg('正在取得位置…（請按允許）');
-  navigator.geolocation.getCurrentPosition(p=>{st.lat=p.coords.latitude;st.lng=p.coords.longitude;st.label='你現在的位置';st.place='';$('place').value='';save();showHere();msg('');go()},
-    e=>msg(e.code===1?'沒有定位權限，請改輸入地點。':'抓不到位置，請改輸入地點。'),{enableHighAccuracy:true,timeout:10000,maximumAge:60000})};
-$('place').addEventListener('keydown',e=>{if(e.key==='Enter'){st.lat=null;go()}});
 
 /* fetch places */
 function oq(lat,lng,r){return `[out:json][timeout:20];(nwr(around:${r},${lat},${lng})["amenity"~"^(restaurant|cafe|bar|pub|fast_food|food_court|karaoke_box)$"]["name"];nwr(around:${r},${lat},${lng})["leisure"="karaoke"]["name"];);out center tags 300;`}
@@ -245,34 +228,95 @@ let ranked=[],page=0;
 function pick3(){const pool=ranked.slice(page*3),out=[],brands=new Set(),kinds={};const bk=r=>r.p.name.replace(/\s.*$/,'').slice(0,4);
   for(const pass of [1,2,9])for(const r of pool){if(out.length===3)break;if(out.includes(r)||brands.has(bk(r)))continue;if((kinds[r.kind]||0)>=pass)continue;if(pass<9&&pool[0]&&r.s<pool[0].s-4)continue;out.push(r);brands.add(bk(r));kinds[r.kind]=(kinds[r.kind]||0)+1}
   return out.sort((a,b)=>b.s-a.s)}
-const COLORS=['var(--red)','var(--blue)','var(--green)'];
+
+
+/* ---------- sentence ---------- */
+const lab=(L,v)=>(L.find(x=>String(x[0])===String(v))||[])[1]||'';
+const PPLS={2:'2 個人',4:'3～4 個人',7:'5～8 個人',10:'一大群人'};
+const PURS={meal:'吃飯',chat:'喝咖啡聊天',drink:'喝一杯',date:'約會',bday:'慶生',after:'續攤'};
+const BUDS={1:'300 元內',2:'300～800 元',3:'800 元以上'};
+function needText(){if(!st.need.length)return'沒特別要求';return st.need.map(n=>lab(NEED,n)).join('、')}
+function drawAsk(){const where=st.place||st.label;
+  $('ask').innerHTML=`我想在 <button class="slot${where?'':' empty'}" data-k="where" type="button">${esc(where||'哪裡')}</button> 附近，跟 <button class="slot" data-k="ppl" type="button">${PPLS[st.ppl]}</button> 去 <button class="slot" data-k="pur" type="button">${PURS[st.pur]}</button>，每人 <button class="slot" data-k="bud" type="button">${BUDS[st.bud]}</button>，最好 <button class="slot" data-k="need" type="button">${esc(needText())}</button>。`}
+$('ask').addEventListener('click',e=>{const b=e.target.closest('.slot');if(b)openSlot(b.dataset.k)});
+
+/* ---------- sheets ---------- */
+function openSheet(html,onReady){$('sheet').innerHTML=html;$('veil').hidden=false;onReady&&onReady($('sheet'));const f=$('sheet').querySelector('input,textarea,button');f&&f.focus()}
+function closeSheet(){$('veil').hidden=true}
+$('veil').addEventListener('click',e=>{if(e.target.id==='veil')closeSheet()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('veil').hidden)closeSheet()});
+const opts=(list,cur,multi)=>`<div class="opts">${list.map(([v,l])=>`<button class="opt" type="button" data-v="${v}" aria-pressed="${multi?cur.includes(v):String(cur)===String(v)}">${l}</button>`).join('')}</div>`;
+function openSlot(k){
+  if(k==='where'){openSheet(`<h4>在哪附近？</h4><div class="row"><input id="placeIn" type="text" placeholder="捷運站、地址或地標" value="${esc(st.place||'')}"><button class="btn" id="placeOk" type="button" style="padding:8px 14px">好</button></div>
+    <button class="opt" id="gps" type="button">📍 用我現在的位置</button><p class="sub">熱門車站</p>${opts(STATIONS.map(s=>[s,s]),'')}`,sh=>{
+    const set=v=>{if(!v)return;st.place=v;st.lat=null;st.label=v;save();drawAsk();closeSheet()};
+    sh.querySelector('#placeOk').onclick=()=>set(sh.querySelector('#placeIn').value.trim());
+    sh.querySelector('#placeIn').onkeydown=e=>{if(e.key==='Enter')set(e.target.value.trim())};
+    sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(b)set(b.dataset.v)};
+    sh.querySelector('#gps').onclick=()=>{if(!navigator.geolocation){toast('這個瀏覽器不能定位');return}toast('正在取得位置…');
+      navigator.geolocation.getCurrentPosition(p=>{Object.assign(st,{lat:p.coords.latitude,lng:p.coords.longitude,label:'我現在的位置',place:''});save();drawAsk();closeSheet()},e=>toast(e.code===1?'沒有定位權限，請改輸入地點':'抓不到位置，請改輸入地點'),{enableHighAccuracy:true,timeout:10000,maximumAge:60000})}});return}
+  const map={ppl:['幾個人？',PPL,'ppl',v=>+v],pur:['要做什麼？',PUR,'pur',v=>v],bud:['一個人大概花多少？',BUD,'bud',v=>+v]};
+  if(map[k]){const[t,L,key,cv]=map[k];openSheet(`<h4>${t}</h4>${opts(L,st[key])}`,sh=>{sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st[key]=cv(b.dataset.v);save();drawAsk();closeSheet()}});return}
+  if(k==='need'){openSheet(`<h4>最好要有（可複選）</h4>${opts(NEED,st.need,true)}<button class="btn dark" id="needOk" type="button">好了</button>`,sh=>{
+    sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const v=b.dataset.v;st.need=st.need.includes(v)?st.need.filter(x=>x!==v):st.need.concat(v);b.setAttribute('aria-pressed',st.need.includes(v))};
+    sh.querySelector('#needOk').onclick=()=>{save();drawAsk();closeSheet()}})}}
+
+/* ---------- crowd feedback ---------- */
+const TAGS=[['up','👍 推薦'],['down','👎 不推'],['quiet','🤫 安靜'],['loud','📢 很吵'],['nolimit','♾️ 不限時'],['limit','⏳ 有限時'],['reserve','📞 可訂位'],['group','🪑 多人好坐'],['plug','🔌 有插座']];
+const TAGTXT=Object.fromEntries(TAGS);
+const keyOf=p=>(p.name+'@'+p.lat.toFixed(3)+','+p.lng.toFixed(3));
+let crowd={};
+function addFeed(rec){if(!rec||!rec.k)return;const c=crowd[rec.k]||(crowd[rec.k]={n:0,tags:{},notes:[]});c.n++;(rec.v||[]).forEach(t=>{if(TAGTXT[t])c.tags[t]=(c.tags[t]||0)+1});if(rec.c)c.notes.push(String(rec.c).slice(0,80))}
+function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}else if(ch==='"')q=true;else if(ch===','){r.push(f);f=''}else if(ch==='\n'){r.push(f);rows.push(r);r=[];f=''}else if(ch!=='\r')f+=ch}if(f||r.length){r.push(f);rows.push(r)}return rows}
+async function loadFeed(){crowd={};LS.get('yn_mine',[]).forEach(addFeed);
+  if(!FEED.csv)return;try{const r=await fetch(FEED.csv+(FEED.csv.includes('?')?'&':'?')+'t='+Math.floor(Date.now()/60000));const rows=parseCSV(await r.text());
+    const mine=new Set(LS.get('yn_mine',[]).map(x=>x.id));rows.slice(1).forEach(row=>{try{const rec=JSON.parse(row[1]||'{}');if(!mine.has(rec.id))addFeed(rec)}catch(e){}})}catch(e){}}
+function crowdLine(p){const c=crowd[keyOf(p)];if(!c)return`<div class="crowd"><span class="none">還沒有人回饋，去過的話幫大家說一句吧。</span></div>`;
+  const tags=Object.entries(c.tags).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([t,n])=>`${TAGTXT[t]} ${n}`).join('　');
+  const note=c.notes.length?` <q>${esc(c.notes[c.notes.length-1])}</q>`:'';return`<div class="crowd">👥 ${c.n} 人回饋：${tags}${note}</div>`}
+function crowdScore(p){const c=crowd[keyOf(p)];if(!c)return 0;const g=t=>c.tags[t]||0;const N=new Set(st.need);let s=(g('up')-g('down'))*.6;
+  if(N.has('quiet'))s+=(g('quiet')-g('loud'))*.8;if(N.has('nolimit'))s+=(g('nolimit')-g('limit'))*.8;if(N.has('reserve'))s+=g('reserve')*.6;if(st.ppl>=5)s+=g('group')*.6;if(N.has('plug'))s+=g('plug')*.6;return Math.max(-3,Math.min(3,s))}
+function openFeedback(p){let picked=[];openSheet(`<h4>${esc(p.name)}</h4><p class="sub">去過嗎？點一點幫下一個人。</p>${opts(TAGS,[],true)}<textarea id="fbTxt" maxlength="80" placeholder="一句話建議（選填），例如：二樓比較安靜、週末限時 90 分"></textarea><button class="btn dark" id="fbOk" type="button">送出</button>`,sh=>{
+  sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const v=b.dataset.v;picked=picked.includes(v)?picked.filter(x=>x!==v):picked.concat(v);b.setAttribute('aria-pressed',picked.includes(v))};
+  sh.querySelector('#fbOk').onclick=()=>{const c=sh.querySelector('#fbTxt').value.trim().replace(/\s+/g,' ').slice(0,80);if(!picked.length&&!c){toast('至少點一個或寫一句');return}
+    const rec={id:Math.random().toString(36).slice(2,10),k:keyOf(p),n:p.name,v:picked,c,ts:Date.now()};
+    const mine=LS.get('yn_mine',[]);mine.push(rec);LS.set('yn_mine',mine.slice(-200));addFeed(rec);
+    if(FEED.form&&FEED.entry){const fd=new URLSearchParams();fd.append(FEED.entry,JSON.stringify(rec));fetch(FEED.form,{method:'POST',mode:'no-cors',body:fd}).catch(()=>{})}
+    closeSheet();renderCards();toast('謝謝！你的回饋會幫到下一個人')}})}
+
+/* ---------- results ---------- */
+const LC=['var(--a)','var(--b)','var(--c)'];
 const gm=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.lat.toFixed(5)+','+p.lng.toFixed(5));
-const gs=p=>'https://www.google.com/search?q='+encodeURIComponent(p.name+' 評價 限時 訂位');
-function render(){const three=pick3();
-  if(!three.length){$('tix').innerHTML='<div class="box" style="text-align:center">附近找不到符合的店。少勾一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('res').hidden=false;return}
-  $('resTitle').textContent=`就這 3 間（${st.label||st.place}附近）`;
-  $('tix').innerHTML=three.map((r,i)=>{const p=r.p;return`<article class="tk pop" style="--c:${COLORS[i]};animation-delay:${i*80}ms"><span class="no">${'ABC'[i]}</span><h3>${esc(p.name)}</h3>
-    <div class="meta"><span>${esc(r.kind||'餐飲')}</span><span>走路 ${walk(p.km)} 分</span>${r.hours?`<span>${esc(r.hours.length>44?r.hours.slice(0,44)+'…':r.hours)}</span>`:''}</div>
-    <div class="why">${r.why.map(w=>`<span>✓ ${esc(w)}</span>`).join('')}${r.warn.map(w=>`<span class="warn">${esc(w)}</span>`).join('')}</div>
-    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">看地圖和評論</a><a href="${gs(p)}" target="_blank" rel="noopener">查限時、訂位</a>${voucherOf(p.name)?`<a class="aff" href="${buyUrl(voucherOf(p.name))}" target="_blank" rel="noopener sponsored">🎟️ 蝦皮找餐券</a>`:''}</div></article>`}).join('');
-  const prep=PREP[st.pur]||[];$('prep').innerHTML=prep.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">🎁 還沒想好送什麼？禮物不踩雷</a>':'');$('prepBox').hidden=!prep.length;
-  const pur=(PUR.find(x=>x[0]===st.pur)||[])[1];
-  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${pur}・${(PPL.find(x=>x[0]===st.ppl)||[])[1]}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」3 秒選的：${SITE}）`;
-  $('res').hidden=false}
-async function go(){const q=$('place').value.trim();
+let three=[];
+function hoursShort(h){if(!h)return'';if(/24\/7/.test(h))return'24 小時';const m=h.match(/-(\d{2}):(\d{2})/);return m?`營業到 ${m[1]>23?String(m[1]-24).padStart(2,'0'):m[1]}:${m[2]}`:''}
+function renderCards(){
+  $('cards').innerHTML=three.map((r,i)=>{const p=r.p,v=voucherOf(p.name),hs=hoursShort(r.hours);return`<article class="card" style="--lc:${LC[i]};animation-delay:${i*70}ms">
+    <div class="top"><span class="badge">${'ABC'[i]}</span><div><h3>${esc(p.name)}</h3><div class="meta">${esc(r.kind||'餐飲')}・走路 ${walk(p.km)} 分${hs?'・'+hs:''}</div></div></div>
+    <div class="reasons">${r.why.map(w=>`<span>✓ ${esc(w)}</span>`).join('')}${r.warn.map(w=>`<span class="no">？${esc(w)}</span>`).join('')}</div>
+    ${crowdLine(p)}
+    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">地圖・評論</a>${v?`<a href="${buyUrl(v)}" target="_blank" rel="noopener sponsored">蝦皮找餐券</a>`:''}<button class="fb" type="button" data-i="${i}">💬 我去過</button></div></article>`}).join('');
+  $('cards').querySelectorAll('.fb').forEach(b=>b.onclick=()=>openFeedback(three[+b.dataset.i].p))}
+function render(){three=pick3();$('res').hidden=false;
+  if(!three.length){$('cards').innerHTML='<div class="card" style="--lc:var(--muted)">附近找不到符合的店。少選一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('prep').innerHTML='';return}
+  renderCards();
+  const pr=PREP[st.pur]||[];$('prep').innerHTML=pr.length?'出門前：'+pr.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">🎁 送什麼禮物</a>':''):'';
+  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${PURS[st.pur]}・${PPLS[st.ppl]}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」選的：${SITE}）`}
+async function go(){
   try{
-    if(q&&(q!==st.place||st.lat==null)){msg(`正在找「${q}」…`);const g=await geocode(q);if(!g){msg(`找不到「${q}」，換個寫法試試，例如加上縣市。`);return}Object.assign(st,g,{place:q});save();showHere()}
-    if(st.lat==null){msg('先輸入地點，或按「📍 我在這」。');$('place').focus();return}
+    if(!st.place&&st.lat==null){openSlot('where');return}
+    if(st.place&&st.lat==null){msg(`正在找「${st.place}」…`);const g=await geocode(st.place);if(!g){msg(`找不到「${st.place}」，換個寫法試試，例如加上縣市。`);return}Object.assign(st,g);save()}
     msg('正在找附近的店…');$('go').disabled=true;
-    const places=await getPlaces(st.lat,st.lng);
-    ranked=places.map(score).filter(Boolean).sort((a,b)=>b.s-a.s);page=0;msg(ranked.length?`附近找到 ${places.length} 間，幫你挑了最合的 3 間`:'');
+    const [places]=await Promise.all([getPlaces(st.lat,st.lng),loadFeed()]);
+    ranked=places.map(p=>{const r=score(p);if(r)r.s+=crowdScore(p);return r}).filter(Boolean).sort((a,b)=>b.s-a.s);page=0;
+    msg('');$('resNote').textContent=places.length?`附近 ${places.length} 間裡最合的`:'';
     render();$('res').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(e){msg('店家資料讀取失敗，等幾秒再按一次。')}finally{$('go').disabled=false}}
-$('go').onclick=()=>go();
-$('again').onclick=()=>{page++;if(page*3>=ranked.length)page=0;render()};
-let tt;const toast=s=>{$('toast').textContent=s;$('toast').hidden=false;clearTimeout(tt);tt=setTimeout(()=>$('toast').hidden=true,2200)};
-$('copyVote').onclick=()=>{const t=$('voteTxt').textContent;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('已複製，貼到群組讓大家投票')).catch(()=>toast('複製不了，請手動選取')):toast('複製不了，請手動選取')};
-window.__yn={score,brandOf,setRanked:(list,lat,lng)=>{ranked=list.map(p=>Object.assign(p,{km:km(lat,lng,p.lat,p.lng),b:brandOf(p.name)})).map(score).filter(Boolean).sort((a,b)=>b.s-a.s);page=0;st.label='測試地點';render()},st};
+$('go').onclick=go;
+$('again').onclick=()=>{page++;if(page*3>=ranked.length)page=0;render();$('res').scrollIntoView({behavior:'smooth',block:'start'})};
+let tt;const toast=s=>{$('toast').textContent=s;$('toast').hidden=false;clearTimeout(tt);tt=setTimeout(()=>$('toast').hidden=true,2400)};
+$('copyVote').onclick=()=>{const t=$('voteTxt').textContent;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('已複製，貼到群組讓大家投 A／B／C')).catch(()=>toast('複製不了，請打開下面的內容手動複製')):toast('複製不了，請打開下面的內容手動複製')};
+drawAsk();
+window.__yn={st,setRanked:(list,lat,lng)=>{ranked=list.map(p=>Object.assign(p,{km:km(lat,lng,p.lat,p.lng),b:brandOf(p.name)})).map(p=>{const r=score(p);if(r)r.s+=crowdScore(p);return r}).filter(Boolean).sort((a,b)=>b.s-a.s);page=0;st.label=st.label||'測試地點';render()},addFeed,openFeedback,keyOf};
 })();
 </script>
 </body>
