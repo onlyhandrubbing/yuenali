@@ -41,7 +41,7 @@ button,input,textarea{font:inherit;color:inherit}
 .brand i{display:inline-flex;gap:3px}.brand i b{width:6px;height:22px;border-radius:3px;display:block}
 /* sentence */
 .ask{margin:28px 0 0;font-family:var(--f-hand);font-weight:400;font-size:clamp(25px,7vw,31px);line-height:1.85;letter-spacing:.01em;text-wrap:pretty}
-.slot{border:0;background:none;padding:0 2px;cursor:pointer;color:var(--ink);font-family:inherit;font-size:inherit;border-bottom:3px solid var(--hi);line-height:1.2;border-radius:0}
+.slot{display:inline;text-align:left;-webkit-box-decoration-break:clone;box-decoration-break:clone;border:0;background:none;padding:0 2px;cursor:pointer;color:var(--ink);font-family:inherit;font-size:inherit;border-bottom:3px solid var(--hi);line-height:1.2;border-radius:0}
 .slot:hover{background:color-mix(in srgb,var(--hi) 25%,transparent)}
 .slot.empty{color:var(--muted);border-bottom-style:dashed}
 .hint{color:var(--muted);font-size:14px;margin:10px 0 0}
@@ -59,8 +59,8 @@ button,input,textarea{font:inherit;color:inherit}
 .badge{flex:none;width:30px;height:30px;border-radius:50%;background:var(--lc);color:#fff;display:grid;place-items:center;font-family:var(--f-hand);font-size:16px;margin-top:2px}
 .card h3{margin:0;font-size:19px;font-weight:900;line-height:1.3}
 .meta{font-size:13.5px;color:var(--muted)}
-.reasons{font-size:14px;line-height:1.7}
-.reasons span{white-space:nowrap;margin-right:10px}
+.reasons{font-size:14px;line-height:1.7;display:flex;flex-wrap:wrap;column-gap:10px}
+.reasons span{white-space:nowrap}
 .reasons .no{color:var(--muted)}
 .crowd{font-size:13.5px;background:color-mix(in srgb,var(--lc) 9%,transparent);border-radius:10px;padding:7px 10px}
 .crowd q{quotes:"「" "」";color:var(--ink)}
@@ -135,7 +135,11 @@ const PUR=[['meal','吃飯'],['chat','咖啡聊天'],['drink','喝一杯'],['dat
 const PPL=[[2,'2 人'],[4,'3～4 人'],[7,'5～8 人'],[10,'9 人以上']];
 const BUD=[[1,'300 內'],[2,'300～800'],[3,'800 以上']];
 const NEED=[['quiet','安靜能聊'],['nolimit','不限時'],['plug','有插座 Wi-Fi'],['reserve','可訂位'],['room','包廂'],['late','晚上 11 點後還開'],['pet','寵物友善'],['veg','有素食']];
-let st=Object.assign({pur:'chat',ppl:4,bud:2,need:['quiet','nolimit'],place:'',lat:null,lng:null,label:''},LS.get('yn_st',{}));
+let st=Object.assign({pur:'chat',ppl:4,bud:2,need:['quiet','nolimit'],place:'',lat:null,lng:null,label:'',pplN:null,purTxt:'',kw:'',budN:null,needX:[]},LS.get('yn_st',{}));
+if(!Array.isArray(st.needX))st.needX=[];
+const PURKW=[[/火鍋|涮|麻辣鍋|羊肉爐|薑母鴨/,'hot_pot','meal'],[/燒肉|烤肉|bbq|燒烤/i,'barbecue','meal'],[/拉麵/,'ramen','meal'],[/壽司|生魚片/,'sushi','meal'],[/牛排/,'steak','meal'],[/披薩|pizza/i,'pizza','meal'],[/義大利|義式|pasta/i,'italian','meal'],[/韓/,'korean','meal'],[/泰/,'thai','meal'],[/越南|河粉/,'vietnamese','meal'],[/日式|日料|丼|定食/,'japanese','meal'],[/素食|蔬食/,'vegetarian|vegan','meal'],[/早午餐|早餐/,'breakfast|brunch','chat'],[/甜點|蛋糕|下午茶|鬆餅/,'dessert|cake|crepe|waffle','chat'],[/居酒屋/,'izakaya','drink'],[/咖哩/,'curry|indian','meal'],[/漢堡/,'burger','meal'],[/海鮮|熱炒/,'seafood|chinese','meal'],[/吃到飽|buffet/i,'buffet','meal'],[/麵|水餃|餃子/,'noodle|ramen|dumpling','meal'],[/手搖|奶茶|茶/,'tea|bubble_tea','chat'],[/咖啡|聊天|讀書|工作|辦公/,'','chat'],[/酒|調酒|啤酒|微醺/,'','drink'],[/唱歌|ktv/i,'','after'],[/生日|慶生|派對/,'','bday'],[/約會|告白|紀念日/,'','date']];
+function guessPur(t){for(const[re,kw,base]of PURKW)if(re.test(t))return{kw,base};return{kw:'',base:'meal'}}
+const XNEED=[[/停車/,t=>/yes|customers/.test(t.parking||'')],[/小孩|親子|兒童|嬰兒|推車/,t=>t.kids_area==='yes'||t.highchair==='yes'||t.changing_table==='yes'],[/無障礙|輪椅|長輩/,t=>t.wheelchair==='yes'],[/戶外|露天/,t=>t.outdoor_seating==='yes'],[/冷氣/,t=>t.air_conditioning==='yes'],[/吸菸|抽菸/,t=>/yes|outside|separated|isolated/.test(t.smoking||'')],[/外帶/,t=>t.takeaway==='yes'],[/刷卡|信用卡/,t=>t['payment:credit_cards']==='yes'],[/wi-?fi|網路/i,t=>/wlan|yes|free/.test(t.internet_access||'')]];
 const save=()=>LS.set('yn_st',st);
 
 /* chain knowledge: name pattern → traits (typical, varies by branch) */
@@ -218,11 +222,15 @@ function score(p){const t=p.t,a=t.amenity==='karaoke'||t.leisure==='karaoke'?'ka
   if(N.has('late')){if(lateOpen(t.opening_hours)||b.late){s+=2.5;why.push('開得晚')}else s-=1.5}
   if(N.has('pet')){if(/yes|leashed|outside/.test(t.dog||'')||b.pet){s+=3;why.push('寵物友善')}else s-=1}
   if(N.has('veg')){if(/yes|only/.test((t['diet:vegetarian']||'')+(t['diet:vegan']||''))||b.veg||/vegetarian|vegan/.test(c)){s+=3;why.push('有素食')}else s-=.8}
-  if(t.outdoor_seating==='yes'&&st.pur!=='bday')why.push('有戶外座位');
+  if(st.purTxt){const re=st.kw?new RegExp(st.kw,'i'):null;const nm=p.name+' '+(t['name:en']||'');
+    if((re&&(re.test(c)||re.test(nm)))||nm.includes(st.purTxt.slice(0,4))){s+=4;why.unshift(`符合「${st.purTxt}」`)}else if(st.kw)s-=1.5}
+  for(const x of st.needX){const m=XNEED.find(([re])=>re.test(x));const cr=crowd[keyOf(p)];const said=cr&&cr.notes.some(n=>n.includes(x.slice(0,2)));
+    if((m&&m[1](t))||said){s+=2;why.push(x)}else warn.push(`「${x}」請先問`)}
+  if(t.outdoor_seating==='yes'&&st.pur!=='bday'&&!st.needX.some(x=>/戶外/.test(x)))why.push('有戶外座位');
   if(b.note){const kw=['不限時','慶生','可訂位','安靜'];for(const k of kw)if(b.note.includes(k))for(let i=why.length-1;i>=0;i--)if(why[i].includes(k))why.splice(i,1);why.unshift(b.note)}
   s-=p.km*3;
   let cl=(c.split(/[;,]/).map(x=>CUILAB[x.trim()]).find(Boolean)||'');if(a==='cafe'&&cl==='咖啡')cl='';const kind=cl+(LABEL[a]||'');
-  return{p,s,why:[...new Set(why)].slice(0,4),warn:warn.slice(0,2),kind,hours:t.opening_hours||''}}
+  return{p,s,why:[...new Set(why)].slice(0,4),warn:warn.slice(0,3),kind,hours:t.opening_hours||''}}
 
 let ranked=[],page=0;
 function pick3(){const pool=ranked.slice(page*3),out=[],brands=new Set(),kinds={};const bk=r=>r.p.name.replace(/\s.*$/,'').slice(0,4);
@@ -235,9 +243,12 @@ const lab=(L,v)=>(L.find(x=>String(x[0])===String(v))||[])[1]||'';
 const PPLS={2:'2 個人',4:'3～4 個人',7:'5～8 個人',10:'一大群人'};
 const PURS={meal:'吃飯',chat:'喝咖啡聊天',drink:'喝一杯',date:'約會',bday:'慶生',after:'續攤'};
 const BUDS={1:'300 元內',2:'300～800 元',3:'800 元以上'};
-function needText(){if(!st.need.length)return'沒特別要求';return st.need.map(n=>lab(NEED,n)).join('、')}
+function needText(){const a=st.need.map(n=>lab(NEED,n)).concat(st.needX);return a.length?a.join('、'):'沒特別要求'}
+const pplText=()=>st.pplN?st.pplN+' 個人':PPLS[st.ppl]||st.ppl+' 個人';
+const purText=()=>st.purTxt||PURS[st.pur];
+const budText=()=>st.budN?st.budN+' 元左右':BUDS[st.bud];
 function drawAsk(){const where=st.place||st.label;
-  $('ask').innerHTML=`我想在 <button class="slot${where?'':' empty'}" data-k="where" type="button">${esc(where||'哪裡')}</button> 附近，跟 <button class="slot" data-k="ppl" type="button">${PPLS[st.ppl]}</button> 去 <button class="slot" data-k="pur" type="button">${PURS[st.pur]}</button>，每人 <button class="slot" data-k="bud" type="button">${BUDS[st.bud]}</button>，最好 <button class="slot" data-k="need" type="button">${esc(needText())}</button>。`}
+  $('ask').innerHTML=`我想在 <button class="slot${where?'':' empty'}" data-k="where" type="button">${esc(where||'哪裡')}</button> 附近，跟 <button class="slot" data-k="ppl" type="button">${esc(pplText())}</button> 去 <button class="slot" data-k="pur" type="button">${esc(purText())}</button>，每人 <button class="slot" data-k="bud" type="button">${esc(budText())}</button>，最好 <button class="slot" data-k="need" type="button">${esc(needText())}</button>。`}
 $('ask').addEventListener('click',e=>{const b=e.target.closest('.slot');if(b)openSlot(b.dataset.k)});
 
 /* ---------- sheets ---------- */
@@ -255,11 +266,23 @@ function openSlot(k){
     sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(b)set(b.dataset.v)};
     sh.querySelector('#gps').onclick=()=>{if(!navigator.geolocation){toast('這個瀏覽器不能定位');return}toast('正在取得位置…');
       navigator.geolocation.getCurrentPosition(p=>{Object.assign(st,{lat:p.coords.latitude,lng:p.coords.longitude,label:'我現在的位置',place:''});save();drawAsk();closeSheet()},e=>toast(e.code===1?'沒有定位權限，請改輸入地點':'抓不到位置，請改輸入地點'),{enableHighAccuracy:true,timeout:10000,maximumAge:60000})}});return}
-  const map={ppl:['幾個人？',PPL,'ppl',v=>+v],pur:['要做什麼？',PUR,'pur',v=>v],bud:['一個人大概花多少？',BUD,'bud',v=>+v]};
-  if(map[k]){const[t,L,key,cv]=map[k];openSheet(`<h4>${t}</h4>${opts(L,st[key])}`,sh=>{sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st[key]=cv(b.dataset.v);save();drawAsk();closeSheet()}});return}
-  if(k==='need'){openSheet(`<h4>最好要有（可複選）</h4>${opts(NEED,st.need,true)}<button class="btn dark" id="needOk" type="button">好了</button>`,sh=>{
+  const own=(ph,type,max)=>`<p class="sub">沒有想要的？自己寫</p><div class="row"><input id="ownIn" type="${type}" ${type==='number'?'inputmode="numeric" min="1" max="'+max+'"':'maxlength="12"'} placeholder="${ph}"><button class="btn" id="ownOk" type="button" style="padding:8px 14px">好</button></div>`;
+  const bindOwn=(sh,fn)=>{const i=sh.querySelector('#ownIn'),go=()=>{const v=i.value.trim();if(!v){i.focus();return}fn(v,i)};sh.querySelector('#ownOk').onclick=go;i.onkeydown=e=>{if(e.key==='Enter')go()}};
+  const done=()=>{save();drawAsk();closeSheet()};
+  if(k==='ppl'){openSheet(`<h4>幾個人？</h4>${opts(PPL,st.pplN?'':st.ppl)}${own('例如 6','number',99)}`,sh=>{
+    sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st.ppl=+b.dataset.v;st.pplN=null;done()};
+    bindOwn(sh,v=>{const n=Math.round(+v);if(!(n>=1&&n<=99)){toast('輸入 1～99 的人數');return}st.pplN=n;st.ppl=n;done()})});return}
+  if(k==='pur'){openSheet(`<h4>要做什麼？</h4>${opts(PUR,st.purTxt?'':st.pur)}${own('例如 吃火鍋、吃拉麵、早午餐','text')}`,sh=>{
+    sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st.pur=b.dataset.v;st.purTxt='';st.kw='';done()};
+    bindOwn(sh,v=>{const g=guessPur(v);st.purTxt=v.replace(/^(去|想)/,'');st.kw=g.kw;st.pur=g.base;done()})});return}
+  if(k==='bud'){openSheet(`<h4>一個人大概花多少？</h4>${opts(BUD,st.budN?'':st.bud)}${own('例如 500','number',99999)}`,sh=>{
+    sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st.bud=+b.dataset.v;st.budN=null;done()};
+    bindOwn(sh,v=>{const n=Math.round(+v);if(!(n>=50)){toast('輸入每人大概幾元');return}st.budN=n;st.bud=n<=300?1:n<=800?2:3;done()})});return}
+  if(k==='need'){const xs=()=>st.needX.map(x=>[x,x]);openSheet(`<h4>最好要有（可複選）</h4>${opts(NEED,st.need,true)}<div id="xOpts">${st.needX.length?opts(xs(),st.needX,true):''}</div>${own('例如 有停車位、可以帶小孩','text')}<button class="btn dark" id="needOk" type="button">好了</button>`,sh=>{
     sh.querySelector('.opts').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const v=b.dataset.v;st.need=st.need.includes(v)?st.need.filter(x=>x!==v):st.need.concat(v);b.setAttribute('aria-pressed',st.need.includes(v))};
-    sh.querySelector('#needOk').onclick=()=>{save();drawAsk();closeSheet()}})}}
+    const xo=sh.querySelector('#xOpts');xo.onclick=e=>{const b=e.target.closest('.opt');if(!b)return;st.needX=st.needX.filter(x=>x!==b.dataset.v);xo.innerHTML=st.needX.length?opts(xs(),st.needX,true):''};
+    bindOwn(sh,(v,i)=>{v=v.replace(/^(要|有)?/,m=>m);if(!st.needX.includes(v)&&st.needX.length<4)st.needX.push(v);i.value='';xo.innerHTML=opts(xs(),st.needX,true);i.focus()});
+    sh.querySelector('#needOk').onclick=()=>{const i=sh.querySelector('#ownIn');if(i.value.trim()&&!st.needX.includes(i.value.trim())&&st.needX.length<4)st.needX.push(i.value.trim());done()}})}}
 
 /* ---------- crowd feedback ---------- */
 const TAGS=[['up','👍 推薦'],['down','👎 不推'],['quiet','🤫 安靜'],['loud','📢 很吵'],['nolimit','♾️ 不限時'],['limit','⏳ 有限時'],['reserve','📞 可訂位'],['group','🪑 多人好坐'],['plug','🔌 有插座']];
@@ -300,7 +323,7 @@ function render(){three=pick3();$('res').hidden=false;
   if(!three.length){$('cards').innerHTML='<div class="card" style="--lc:var(--muted)">附近找不到符合的店。少選一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('prep').innerHTML='';return}
   renderCards();
   const pr=PREP[st.pur]||[];$('prep').innerHTML=pr.length?'出門前：'+pr.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">🎁 送什麼禮物</a>':''):'';
-  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${PURS[st.pur]}・${PPLS[st.ppl]}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」選的：${SITE}）`}
+  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${purText()}・${pplText()}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」選的：${SITE}）`}
 async function go(){
   try{
     if(!st.place&&st.lat==null){openSlot('where');return}
