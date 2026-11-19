@@ -14,101 +14,100 @@
 <link rel="canonical" href="https://onlyhandrubbing.github.io/yuenali/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* Layout: one narrow column. The question is a single sentence with tappable blanks; the answer is three line-coloured cards; each card collects what visitors say about the place. */
+/* Printed order-slip feel: warm paper, one ink colour, one vermilion accent. Blanks in the sentence are filled tags; results are a numbered list split by hairlines. */
 :root{
-  --bg:#eef1f4; --grid:#e3e8ed; --card:#ffffff; --ink:#18212b; --muted:#5f6c79; --rule:#d5dce3;
-  --a:#e3002c; --b:#0070bd; --c:#008659; --hi:#f8b61c; --hi-ink:#2a1d00;
-  --f-hand:"Huninn","Noto Sans TC",system-ui,sans-serif;
-  --f-body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --paper:#f4f0e8; --sheet:#fbf9f4; --ink:#1f1c18; --muted:#77706a; --line:#ddd5c8; --fill:#e7e0d3; --fill-h:#ddd4c4;
+  --red:#c8412a;
+  --serif:"Noto Serif TC","Noto Serif CJK TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#11161c; --grid:#161d25; --card:#1a222b; --ink:#e9eff5; --muted:#9aa8b6; --rule:#2a3541;
-  --a:#ff5263; --b:#4aa8ff; --c:#3cc58f; --hi:#ffc94a; --hi-ink:#231800; color-scheme:dark}}
+  --paper:#191714; --sheet:#211e1a; --ink:#efe9df; --muted:#a39b90; --line:#36312b; --fill:#2f2a24; --fill-h:#3a342c;
+  --red:#ec6a50; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11161c; --grid:#161d25; --card:#1a222b; --ink:#e9eff5; --muted:#9aa8b6; --rule:#2a3541;
-  --a:#ff5263; --b:#4aa8ff; --c:#3cc58f; --hi:#ffc94a; --hi-ink:#231800; color-scheme:dark}
+  --paper:#191714; --sheet:#211e1a; --ink:#efe9df; --muted:#a39b90; --line:#36312b; --fill:#2f2a24; --fill-h:#3a342c;
+  --red:#ec6a50; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;background:var(--bg);
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
-.app{max-width:500px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:22px 64px}
+body{margin:0;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;background:var(--paper)}
+.app{max-width:520px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:20px 72px}
 button,input,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--b);outline-offset:2px}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-hand);font-size:20px}
-.brand i{display:inline-flex;gap:3px}.brand i b{width:6px;height:22px;border-radius:3px;display:block}
-/* sentence */
-.ask{margin:28px 0 0;font-family:var(--f-hand);font-weight:400;font-size:clamp(25px,7vw,31px);line-height:1.85;letter-spacing:.01em;text-wrap:pretty}
-.slot{display:inline;text-align:left;-webkit-box-decoration-break:clone;box-decoration-break:clone;border:0;background:none;padding:0 2px;cursor:pointer;color:var(--ink);font-family:inherit;font-size:inherit;border-bottom:3px solid var(--hi);line-height:1.2;border-radius:0}
-.slot:hover{background:color-mix(in srgb,var(--hi) 25%,transparent)}
-.slot.empty{color:var(--muted);border-bottom-style:dashed}
-.hint{color:var(--muted);font-size:14px;margin:10px 0 0}
-.go{margin-top:22px;width:100%;border:0;border-radius:16px;background:var(--ink);color:var(--bg);font-family:var(--f-hand);font-size:22px;padding:14px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:10px}
-.go:disabled{opacity:.6;cursor:default}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.brand{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);letter-spacing:.08em}
+.brand b{display:inline-flex;align-items:center;gap:9px;font-family:var(--serif);font-weight:900;font-size:19px;color:var(--ink);letter-spacing:.02em}
+.seal{width:24px;height:24px;border-radius:5px;background:var(--red);color:#fff;font-size:13px;display:grid;place-items:center;transform:rotate(-4deg);font-family:var(--serif)}
+.ask{margin:44px 0 0;font-family:var(--serif);font-weight:500;font-size:clamp(23px,6.4vw,30px);line-height:2.05;text-wrap:pretty}
+.slot{display:inline;-webkit-box-decoration-break:clone;box-decoration-break:clone;border:0;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:700;color:var(--ink);background:var(--fill);border-radius:8px;padding:.06em .38em;margin:0 .06em;line-height:1.5;text-align:left;transition:background .15s}
+.slot:hover{background:var(--fill-h)}
+.j,.slot{white-space:nowrap}
+.slot[data-k=need],.slot[data-k=where]{white-space:normal}
+.slot.empty{background:none;box-shadow:inset 0 0 0 1.5px var(--muted);color:var(--muted);font-weight:500}
+.hint{color:var(--muted);font-size:13.5px;margin:14px 0 0}
+.go{margin-top:28px;width:100%;border:0;border-radius:12px;background:var(--ink);color:var(--paper);font-weight:700;font-size:17px;letter-spacing:.06em;padding:16px;cursor:pointer;transition:transform .1s}
+.go:active{transform:scale(.99)}
+.go:disabled{opacity:.55;cursor:default}
 .status{min-height:1.5em;text-align:center;color:var(--muted);font-size:14px;margin-top:10px}
-/* results */
-.res{margin-top:30px;display:grid;gap:14px}
-.res-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.res-h h2{margin:0;font-family:var(--f-hand);font-weight:400;font-size:24px}
+.res{margin-top:40px}
+.res-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.res-h h2{margin:0;font-family:var(--serif);font-weight:900;font-size:22px}
 .res-h small{color:var(--muted);font-size:13px}
-.card{background:var(--card);border-radius:18px;padding:16px 16px 12px 20px;position:relative;box-shadow:0 1px 0 var(--rule),0 12px 28px -22px rgba(0,0,0,.6);display:grid;gap:8px;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--lc)}
-.card .top{display:flex;gap:12px;align-items:flex-start}
-.badge{flex:none;width:30px;height:30px;border-radius:50%;background:var(--lc);color:#fff;display:grid;place-items:center;font-family:var(--f-hand);font-size:16px;margin-top:2px}
-.card h3{margin:0;font-size:19px;font-weight:900;line-height:1.3}
-.meta{font-size:13.5px;color:var(--muted)}
-.reasons{font-size:14px;line-height:1.7;display:flex;flex-wrap:wrap;column-gap:10px}
-.reasons span{white-space:nowrap}
-.reasons .no{color:var(--muted)}
-.crowd{font-size:13.5px;background:color-mix(in srgb,var(--lc) 9%,transparent);border-radius:10px;padding:7px 10px}
+.pick{display:grid;grid-template-columns:34px 1fr;gap:0 10px;padding:20px 0 16px;border-bottom:1px solid var(--line);animation:in .35s ease-out both}
+.num{font-family:var(--serif);font-weight:900;font-size:30px;line-height:1.05;color:var(--red)}
+.pick h3{margin:0;font-family:var(--serif);font-weight:700;font-size:21px;line-height:1.35}
+.meta{font-size:13.5px;color:var(--muted);margin-top:2px}
+.why{margin:10px 0 0;font-size:15px}
+.warn{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+.warn::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:7px;vertical-align:2px}
+.crowd{margin-top:10px;font-size:13.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:10px}
 .crowd q{quotes:"「" "」";color:var(--ink)}
-.crowd .none{color:var(--muted)}
-.acts{display:flex;gap:4px;border-top:1px solid var(--rule);margin-top:4px;padding-top:6px;flex-wrap:wrap}
-.acts a,.acts button{border:0;background:none;padding:6px 8px;border-radius:8px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer}
-.acts a:hover,.acts button:hover{background:var(--bg)}
-.acts .fb{margin-left:auto;color:var(--lc)}
-.more{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}
-.btn{border:1.5px solid var(--ink);background:var(--card);border-radius:14px;padding:11px 10px;cursor:pointer;font-family:var(--f-hand);font-size:17px}
-.btn.dark{background:var(--ink);color:var(--bg)}
-details.vote{font-size:14px;color:var(--muted)}
+.acts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:14px;font-weight:700;align-items:center}
+.acts a{text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}
+.acts .fb{margin-left:auto;border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:5px 14px;cursor:pointer;font-size:13.5px;font-weight:700}
+.acts .fb:hover{border-color:var(--ink)}
+.empty-res{padding:22px 0;color:var(--muted);border-bottom:1px solid var(--line)}
+.more{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:22px}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:12px;padding:12px 10px;cursor:pointer;font-weight:700;font-size:15px}
+.btn.dark{background:var(--ink);color:var(--paper)}
+details.vote{font-size:13.5px;color:var(--muted);margin-top:12px}
 details.vote summary{cursor:pointer}
-details.vote pre{white-space:pre-wrap;font-family:var(--f-body);background:var(--card);border-radius:12px;padding:10px 12px;color:var(--ink);max-height:200px;overflow:auto}
-.prep{font-size:14px;color:var(--muted);line-height:2}
-.prep a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--hi);margin-right:12px;white-space:nowrap}
-.fine{margin-top:36px;font-size:12px;color:var(--muted);line-height:1.7}
-.fine a{color:var(--muted)}
-/* sheets */
-.veil{position:fixed;inset:0;background:rgba(10,14,18,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:100%;max-width:500px;background:var(--card);border-radius:22px 22px 0 0;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));display:grid;gap:14px;max-height:85vh;overflow:auto;animation:up .22s ease-out}
-@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
-.sheet h4{margin:0;font-family:var(--f-hand);font-weight:400;font-size:22px}
+details.vote pre{white-space:pre-wrap;font-family:var(--sans);background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);max-height:200px;overflow:auto}
+.prep{margin-top:26px;padding:14px 16px;background:var(--sheet);border:1px solid var(--line);border-radius:12px;font-size:14px;line-height:2}
+.prep span{display:block;font-size:12px;color:var(--muted);letter-spacing:.08em}
+.prep a{text-decoration:none;font-weight:700;margin-right:16px;white-space:nowrap;border-bottom:1px solid var(--red)}
+.fine{margin-top:44px;font-size:12px;color:var(--muted);line-height:1.8}
+.veil{position:fixed;inset:0;background:rgba(20,16,12,.42);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:520px;background:var(--sheet);border-radius:18px 18px 0 0;padding:22px max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));display:grid;gap:14px;max-height:85vh;overflow:auto;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(24px)}to{transform:none}}
+.sheet h4{margin:0;font-family:var(--serif);font-weight:700;font-size:20px}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
-.opt{border:1.5px solid var(--rule);background:var(--card);border-radius:12px;padding:8px 13px;cursor:pointer;font-size:15px}
-.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg);font-weight:700}
+.opt{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 15px;cursor:pointer;font-size:15px}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
 .row{display:flex;gap:8px}
-.row input{flex:1;min-width:0;border:1.5px solid var(--rule);border-radius:12px;padding:10px 12px;background:var(--bg)}
-textarea{width:100%;border:1.5px solid var(--rule);border-radius:12px;padding:10px 12px;background:var(--bg);resize:vertical;min-height:70px}
-.sub{font-size:13px;color:var(--muted);margin:-6px 0 0}
-.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;z-index:60;max-width:calc(100% - 36px);text-align:center}
-.card{animation:in .35s ease-out both}
-@keyframes in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper)}
+textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);resize:vertical;min-height:70px}
+.sub{font-size:13px;color:var(--muted);margin:-4px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-weight:700;z-index:60;max-width:calc(100% - 40px);text-align:center;font-size:14px}
+@keyframes in{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="brand"><i aria-hidden="true"><b style="background:var(--a)"></b><b style="background:var(--b)"></b><b style="background:var(--c)"></b><b style="background:var(--hi)"></b></i>約哪裡</div>
+  <div class="brand"><b><span class="seal" aria-hidden="true">約</span>約哪裡</b><span>今天去哪</span></div>
 
   <p class="ask" id="ask"></p>
-  <p class="hint">點畫底線的地方就能改。</p>
+  <p class="hint">灰底的字點一下就能換，也可以自己打。</p>
   <button class="go" id="go" type="button">幫我挑 3 間 <span aria-hidden="true">→</span></button>
   <div class="status" id="status" aria-live="polite"></div>
 
   <section class="res" id="res" hidden>
-    <div class="res-h"><h2>就這 3 間</h2><small id="resNote"></small></div>
-    <div id="cards" style="display:grid;gap:14px"></div>
+    <div class="res-h"><h2>就這三間</h2><small id="resNote"></small></div>
+    <div id="cards"></div>
     <div class="more"><button class="btn" id="again" type="button">再換 3 間</button><button class="btn dark" id="copyVote" type="button">傳到群組投票</button></div>
     <details class="vote"><summary>看要傳出去的內容</summary><pre id="voteTxt"></pre></details>
     <div class="prep" id="prep"></div>
@@ -147,7 +146,7 @@ const AFF={id:'16301320039',sub:'yuenali'};
 const buyUrl=kw=>'https://s.shopee.tw/an_redir?origin_link='+encodeURIComponent('https://shopee.tw/search?keyword='+encodeURIComponent(kw))+'&affiliate_id='+AFF.id+'&sub_id='+AFF.sub;
 const VOUCH=[[/星巴克|starbucks/i,'星巴克 電子券'],[/路易莎|louisa/i,'路易莎 咖啡券'],[/王品|陶板屋|西堤|夏慕尼|藝奇|原燒|品田牧場|石二鍋|青花驕|肉次方/i,'王品 餐券'],[/海底撈/i,'海底撈 券'],[/瓦城|大心|1010湘|非常泰/i,'瓦城 餐券'],[/錢櫃|partyworld|cashbox/i,'錢櫃 歡唱券'],[/好樂迪|holiday/i,'好樂迪 歡唱券'],[/星聚點/i,'星聚點 歡唱券'],[/鼎王/i,'鼎王 餐券'],[/築間/i,'築間 餐券'],[/乾杯/i,'乾杯 燒肉 餐券'],[/饗|響食天堂|饗泰多|旭集/i,'饗賓 餐券'],[/麥當勞|mcdonald/i,'麥當勞 電子券'],[/摩斯|mos/i,'摩斯 電子券'],[/85度c/i,'85度C 電子券'],[/鬍鬚張/i,'鬍鬚張 餐券'],[/漢來/i,'漢來 餐券']];
 const voucherOf=n=>{for(const[re,k]of VOUCH)if(re.test(n))return k;return''};
-const PREP={meal:[['🎟️ 連鎖餐廳電子餐券','餐廳 電子餐券']],chat:[['☕ 帶回家的濾掛咖啡','濾掛咖啡 禮盒']],drink:[['🥃 在家續攤的調酒杯組','調酒 杯組']],date:[['💐 約會小花束','花束 小束'],['🕯️ 香氛蠟燭','香氛蠟燭 禮盒']],bday:[['🎈 生日派對佈置','生日 派對 佈置'],['🎂 數字蠟燭','數字蠟燭'],['🎉 派對拉炮','派對 拉炮']],after:[['🎲 續攤派對桌遊','桌遊 派對'],['🎤 KTV 歡唱券','KTV 歡唱券']]};
+const PREP={meal:[['連鎖餐廳電子餐券','餐廳 電子餐券']],chat:[['帶回家的濾掛咖啡','濾掛咖啡 禮盒']],drink:[['在家續攤的調酒杯組','調酒 杯組']],date:[['約會小花束','花束 小束'],['香氛蠟燭','香氛蠟燭 禮盒']],bday:[['生日派對佈置','生日 派對 佈置'],['數字蠟燭','數字蠟燭'],['派對拉炮','派對 拉炮']],after:[['續攤派對桌遊','桌遊 派對'],['KTV 歡唱券','KTV 歡唱券']]};
 const BRANDS=[
  [/星巴克|starbucks/i,{nolimit:1,plug:1,big:1,chat:1,price:2,note:'多數分店不限時、插座多'}],
  [/路易莎|louisa/i,{nolimit:1,plug:1,big:1,chat:1,price:1,note:'座位多、多半不限時'}],
@@ -248,8 +247,10 @@ const pplText=()=>st.pplN?st.pplN+' 個人':PPLS[st.ppl]||st.ppl+' 個人';
 const purText=()=>st.purTxt||PURS[st.pur];
 const budText=()=>st.budN?st.budN+' 元左右':BUDS[st.bud];
 function drawAsk(){const where=st.place||st.label;
-  $('ask').innerHTML=`我想在 <button class="slot${where?'':' empty'}" data-k="where" type="button">${esc(where||'哪裡')}</button> 附近，跟 <button class="slot" data-k="ppl" type="button">${esc(pplText())}</button> 去 <button class="slot" data-k="pur" type="button">${esc(purText())}</button>，每人 <button class="slot" data-k="bud" type="button">${esc(budText())}</button>，最好 <button class="slot" data-k="need" type="button">${esc(needText())}</button>。`}
+  const sl=(k,t,cls='')=>`<span class="slot${cls}" role="button" tabindex="0" data-k="${k}">${esc(t)}</span>`,j=t=>`<span class="j">${t}</span>`;
+  $('ask').innerHTML=`${j('我想在')} ${sl('where',where||'哪裡',where?'':' empty')} ${j('附近，跟')} ${sl('ppl',pplText())} ${j('去')} ${sl('pur',purText())}${j('，每人')} ${sl('bud',budText())}${j('，最好')} ${sl('need',needText())}${j('。')}`}
 $('ask').addEventListener('click',e=>{const b=e.target.closest('.slot');if(b)openSlot(b.dataset.k)});
+$('ask').addEventListener('keydown',e=>{const b=e.target.closest('.slot');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openSlot(b.dataset.k)}});
 
 /* ---------- sheets ---------- */
 function openSheet(html,onReady){$('sheet').innerHTML=html;$('veil').hidden=false;onReady&&onReady($('sheet'));const f=$('sheet').querySelector('input,textarea,button');f&&f.focus()}
@@ -259,7 +260,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('veil').hidden)c
 const opts=(list,cur,multi)=>`<div class="opts">${list.map(([v,l])=>`<button class="opt" type="button" data-v="${v}" aria-pressed="${multi?cur.includes(v):String(cur)===String(v)}">${l}</button>`).join('')}</div>`;
 function openSlot(k){
   if(k==='where'){openSheet(`<h4>在哪附近？</h4><div class="row"><input id="placeIn" type="text" placeholder="捷運站、地址或地標" value="${esc(st.place||'')}"><button class="btn" id="placeOk" type="button" style="padding:8px 14px">好</button></div>
-    <button class="opt" id="gps" type="button">📍 用我現在的位置</button><p class="sub">熱門車站</p>${opts(STATIONS.map(s=>[s,s]),'')}`,sh=>{
+    <button class="opt" id="gps" type="button">用我現在的位置</button><p class="sub">熱門車站</p>${opts(STATIONS.map(s=>[s,s]),'')}`,sh=>{
     const set=v=>{if(!v)return;st.place=v;st.lat=null;st.label=v;save();drawAsk();closeSheet()};
     sh.querySelector('#placeOk').onclick=()=>set(sh.querySelector('#placeIn').value.trim());
     sh.querySelector('#placeIn').onkeydown=e=>{if(e.key==='Enter')set(e.target.value.trim())};
@@ -285,7 +286,7 @@ function openSlot(k){
     sh.querySelector('#needOk').onclick=()=>{const i=sh.querySelector('#ownIn');if(i.value.trim()&&!st.needX.includes(i.value.trim())&&st.needX.length<4)st.needX.push(i.value.trim());done()}})}}
 
 /* ---------- crowd feedback ---------- */
-const TAGS=[['up','👍 推薦'],['down','👎 不推'],['quiet','🤫 安靜'],['loud','📢 很吵'],['nolimit','♾️ 不限時'],['limit','⏳ 有限時'],['reserve','📞 可訂位'],['group','🪑 多人好坐'],['plug','🔌 有插座']];
+const TAGS=[['up','推薦'],['down','不推'],['quiet','安靜'],['loud','很吵'],['nolimit','不限時'],['limit','有限時'],['reserve','可訂位'],['group','多人好坐'],['plug','有插座']];
 const TAGTXT=Object.fromEntries(TAGS);
 const keyOf=p=>(p.name+'@'+p.lat.toFixed(3)+','+p.lng.toFixed(3));
 let crowd={};
@@ -294,9 +295,9 @@ function parseCSV(t){const rows=[];let r=[],f='',q=false;for(let i=0;i<t.length;
 async function loadFeed(){crowd={};LS.get('yn_mine',[]).forEach(addFeed);
   if(!FEED.csv)return;try{const r=await fetch(FEED.csv+(FEED.csv.includes('?')?'&':'?')+'t='+Math.floor(Date.now()/60000));const rows=parseCSV(await r.text());
     const mine=new Set(LS.get('yn_mine',[]).map(x=>x.id));rows.slice(1).forEach(row=>{try{const rec=JSON.parse(row[1]||'{}');if(!mine.has(rec.id))addFeed(rec)}catch(e){}})}catch(e){}}
-function crowdLine(p){const c=crowd[keyOf(p)];if(!c)return`<div class="crowd"><span class="none">還沒有人回饋，去過的話幫大家說一句吧。</span></div>`;
+function crowdLine(p){const c=crowd[keyOf(p)];if(!c)return`<div class="crowd">還沒人留言。去過的話，幫下一個人說一句。</div>`;
   const tags=Object.entries(c.tags).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([t,n])=>`${TAGTXT[t]} ${n}`).join('　');
-  const note=c.notes.length?` <q>${esc(c.notes[c.notes.length-1])}</q>`:'';return`<div class="crowd">👥 ${c.n} 人回饋：${tags}${note}</div>`}
+  const note=c.notes.length?` <q>${esc(c.notes[c.notes.length-1])}</q>`:'';return`<div class="crowd">${c.n} 人去過：${tags}${note}</div>`}
 function crowdScore(p){const c=crowd[keyOf(p)];if(!c)return 0;const g=t=>c.tags[t]||0;const N=new Set(st.need);let s=(g('up')-g('down'))*.6;
   if(N.has('quiet'))s+=(g('quiet')-g('loud'))*.8;if(N.has('nolimit'))s+=(g('nolimit')-g('limit'))*.8;if(N.has('reserve'))s+=g('reserve')*.6;if(st.ppl>=5)s+=g('group')*.6;if(N.has('plug'))s+=g('plug')*.6;return Math.max(-3,Math.min(3,s))}
 function openFeedback(p){let picked=[];openSheet(`<h4>${esc(p.name)}</h4><p class="sub">去過嗎？點一點幫下一個人。</p>${opts(TAGS,[],true)}<textarea id="fbTxt" maxlength="80" placeholder="一句話建議（選填），例如：二樓比較安靜、週末限時 90 分"></textarea><button class="btn dark" id="fbOk" type="button">送出</button>`,sh=>{
@@ -308,22 +309,23 @@ function openFeedback(p){let picked=[];openSheet(`<h4>${esc(p.name)}</h4><p clas
     closeSheet();renderCards();toast('謝謝！你的回饋會幫到下一個人')}})}
 
 /* ---------- results ---------- */
-const LC=['var(--a)','var(--b)','var(--c)'];
 const gm=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.name+' '+p.lat.toFixed(5)+','+p.lng.toFixed(5));
 let three=[];
 function hoursShort(h){if(!h)return'';if(/24\/7/.test(h))return'24 小時';const m=h.match(/-(\d{2}):(\d{2})/);return m?`營業到 ${m[1]>23?String(m[1]-24).padStart(2,'0'):m[1]}:${m[2]}`:''}
 function renderCards(){
-  $('cards').innerHTML=three.map((r,i)=>{const p=r.p,v=voucherOf(p.name),hs=hoursShort(r.hours);return`<article class="card" style="--lc:${LC[i]};animation-delay:${i*70}ms">
-    <div class="top"><span class="badge">${'ABC'[i]}</span><div><h3>${esc(p.name)}</h3><div class="meta">${esc(r.kind||'餐飲')}・走路 ${walk(p.km)} 分${hs?'・'+hs:''}</div></div></div>
-    <div class="reasons">${r.why.map(w=>`<span>✓ ${esc(w)}</span>`).join('')}${r.warn.map(w=>`<span class="no">？${esc(w)}</span>`).join('')}</div>
+  $('cards').innerHTML=three.map((r,i)=>{const p=r.p,v=voucherOf(p.name),hs=hoursShort(r.hours);return`<article class="pick" style="animation-delay:${i*70}ms">
+    <div class="num">${i+1}</div><div>
+    <h3>${esc(p.name)}</h3><div class="meta">${esc(r.kind||'餐飲')}・走路 ${walk(p.km)} 分${hs?'・'+hs:''}</div>
+    ${r.why.length?`<p class="why">${r.why.map(esc).join('，')}</p>`:''}
+    ${r.warn.length?`<p class="warn">${r.warn.map(esc).join('・')}</p>`:''}
     ${crowdLine(p)}
-    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">地圖・評論</a>${v?`<a href="${buyUrl(v)}" target="_blank" rel="noopener sponsored">蝦皮找餐券</a>`:''}<button class="fb" type="button" data-i="${i}">💬 我去過</button></div></article>`}).join('');
+    <div class="acts"><a href="${gm(p)}" target="_blank" rel="noopener">地圖與評論</a>${v?`<a href="${buyUrl(v)}" target="_blank" rel="noopener sponsored">蝦皮餐券</a>`:''}<button class="fb" type="button" data-i="${i}">我去過</button></div></div></article>`}).join('');
   $('cards').querySelectorAll('.fb').forEach(b=>b.onclick=()=>openFeedback(three[+b.dataset.i].p))}
 function render(){three=pick3();$('res').hidden=false;
-  if(!three.length){$('cards').innerHTML='<div class="card" style="--lc:var(--muted)">附近找不到符合的店。少選一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('prep').innerHTML='';return}
+  if(!three.length){$('cards').innerHTML='<div class="empty-res">附近找不到符合的店。少選一兩個條件，或換個地點試試。</div>';$('voteTxt').textContent='';$('prep').innerHTML='';return}
   renderCards();
-  const pr=PREP[st.pur]||[];$('prep').innerHTML=pr.length?'出門前：'+pr.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">🎁 送什麼禮物</a>':''):'';
-  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${purText()}・${pplText()}\n要去哪間？回 A／B／C 投票 🙋\n\n`+three.map((r,i)=>`${'ABC'[i]}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」選的：${SITE}）`}
+  const pr=PREP[st.pur]||[];$('prep').hidden=!pr.length;$('prep').innerHTML=pr.length?'<span>出門前順手</span>'+pr.map(([l,k])=>`<a href="${buyUrl(k)}" target="_blank" rel="noopener sponsored">${l}</a>`).join('')+((st.pur==='bday'||st.pur==='date')?'<a href="https://onlyhandrubbing.github.io/liwu/" target="_blank" rel="noopener">送什麼禮物</a>':''):'';
+  $('voteTxt').textContent=`📍 ${st.label||st.place}附近・${purText()}・${pplText()}\n要去哪間？回 1／2／3 投票 🙋\n\n`+three.map((r,i)=>`${i+1}｜${r.p.name}（${r.kind||'餐飲'}，走路 ${walk(r.p.km)} 分）\n${gm(r.p)}`).join('\n\n')+`\n\n（用「約哪裡」選的：${SITE}）`}
 async function go(){
   try{
     if(!st.place&&st.lat==null){openSlot('where');return}
