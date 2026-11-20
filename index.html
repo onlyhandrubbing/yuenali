@@ -113,6 +113,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px
     <div class="prep" id="prep"></div>
   </section>
 
+  <p style="margin-top:28px;font-size:14px">已經知道要約在哪一站？看<a href="s/" style="font-weight:700">捷運站指南</a>，全台 192 站一鍵挑。</p>
   <p class="fine">店家資料來自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap 貢獻者</a>。「安靜」「不限時」等是依店家類型和連鎖品牌常見規定推估，再加上去過的人的回饋；各分店不同，出發前請用 Google 地圖確認。回饋為使用者自行留下，不代表本站立場。「餐券」與「出門前」的連結為蝦皮推薦連結，透過連結購買站長可能獲得分潤，你的價格不受影響。</p>
 </div>
 
@@ -340,6 +341,13 @@ $('go').onclick=go;
 $('again').onclick=()=>{page++;if(page*3>=ranked.length)page=0;render();$('res').scrollIntoView({behavior:'smooth',block:'start'})};
 let tt;const toast=s=>{$('toast').textContent=s;$('toast').hidden=false;clearTimeout(tt);tt=setTimeout(()=>$('toast').hidden=true,2400)};
 $('copyVote').onclick=()=>{const t=$('voteTxt').textContent;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('已複製，貼到群組讓大家投 A／B／C')).catch(()=>toast('複製不了，請打開下面的內容手動複製')):toast('複製不了，請打開下面的內容手動複製')};
+{const q=new URLSearchParams(location.search),at=q.get('at');
+ if(at){st.place=at.slice(0,30);st.lat=null;st.label=st.place;
+  const pu=q.get('pur');if(pu&&PUR.some(x=>x[0]===pu)){st.pur=pu;st.purTxt='';st.kw=''}
+  const nd=q.get('need');if(nd!==null){st.need=nd.split(',').filter(n=>NEED.some(x=>x[0]===n));st.needX=[]}
+  const bd=+q.get('bud');if([1,2,3].includes(bd)){st.bud=bd;st.budN=null}
+  const pp=+q.get('ppl');if(pp>0&&pp<100){st.ppl=pp;st.pplN=PPL.some(x=>x[0]===pp)?null:pp}
+  save();setTimeout(()=>go(),300)}}
 drawAsk();
 window.__yn={st,setRanked:(list,lat,lng)=>{ranked=list.map(p=>Object.assign(p,{km:km(lat,lng,p.lat,p.lng),b:brandOf(p.name)})).map(p=>{const r=score(p);if(r)r.s+=crowdScore(p);return r}).filter(Boolean).sort((a,b)=>b.s-a.s);page=0;st.label=st.label||'測試地點';render()},addFeed,openFeedback,keyOf};
 })();
